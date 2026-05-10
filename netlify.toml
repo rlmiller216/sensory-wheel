@@ -1,0 +1,14 @@
+# Netlify build configuration — see CLAUDE.md "Commands" for the full pipeline.
+[build]
+  command = "uv sync && uv run python scripts/build_bundle.py && cd frontend && npm install && npm run build"
+  publish = "frontend/dist/"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PYTHON_VERSION = "3.12"
+
+# Single-page app: all routes serve the same index.html so client-side routing works.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

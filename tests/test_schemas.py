@@ -253,20 +253,23 @@ class TestCitation:
         with pytest.raises(ValidationError):
             Citation(**data)
 
-    def test_rejects_local_pdf_filename_with_path_separator(self):
-        data = {**_CITATION_BASE, "doi": "10.1234/x", "local_pdf_filename": "subdir/paper.pdf"}
-        with pytest.raises(ValidationError):
-            Citation(**data)
-
-    def test_rejects_local_pdf_filename_not_on_disk(self):
-        # File does not exist → should fail
-        data = {**_CITATION_BASE, "doi": "10.1234/x", "local_pdf_filename": "nonexistent-paper.pdf"}
-        with pytest.raises(ValidationError):
-            Citation(**data)
-
     def test_accepts_local_pdf_filename_none(self):
         c = Citation(**_CITATION_BASE, doi="10.1234/x", local_pdf_filename=None)
         assert c.local_pdf_filename is None
+
+    def test_accepts_local_pdf_filename_bare_string(self):
+        """PYD layer accepts any bare string. File-existence check
+        is deferred to a follow-up CD-hardening plan."""
+        c = Citation(
+            id="test-2024",
+            title="A paper",
+            authors=["Doe, J."],
+            year=2024,
+            doi="10.1234/test",
+            source_kind="journal",
+            local_pdf_filename="any-filename-even-nonexistent.pdf",
+        )
+        assert c.local_pdf_filename == "any-filename-even-nonexistent.pdf"
 
     def test_no_year_bounds(self):
         # BUSINESS_RULES.md §4: no upper/lower bound on year

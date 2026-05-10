@@ -9,7 +9,6 @@ into alignment.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
@@ -99,27 +98,6 @@ class Compound(_StrictBase):
 # ---------------------------------------------------------------------------
 
 
-def _validate_local_pdf_filename(value: str | None) -> str | None:
-    """Validate local_pdf_filename per BUSINESS_RULES.md §4.
-
-    Rejects values containing path separators. When present, checks that
-    the file exists under Literature/.
-    """
-    if value is None:
-        return value
-    if "/" in value or "\\" in value:
-        raise ValueError(
-            f"local_pdf_filename must be a bare filename with no path separators, got: {value!r}"
-        )
-    pdf_path = Path("Literature") / value
-    if not pdf_path.exists():
-        raise ValueError(
-            f"local_pdf_filename {value!r} not found at {pdf_path}; "
-            "add the file or set local_pdf_filename to null"
-        )
-    return value
-
-
 class Citation(_StrictBase):
     """A literature reference. See BUSINESS_RULES.md §4."""
 
@@ -142,11 +120,6 @@ class Citation(_StrictBase):
     def _require_doi_or_url(self) -> Citation:
         if self.doi is None and self.url is None:
             raise ValueError("Citation must have at least one of `doi` or `url`")
-        return self
-
-    @model_validator(mode="after")
-    def _validate_pdf_path(self) -> Citation:
-        _validate_local_pdf_filename(self.local_pdf_filename)
         return self
 
 

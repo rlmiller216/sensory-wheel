@@ -7,7 +7,7 @@ All validation, constraints, and guards enforced across three layers, grouped by
 - **JS** — Frontend guard (Svelte component or store action). Runs at runtime when importing wheel-state JSON or mutating wheel state.
 - **UI** — Template-level rendering rule (e.g., plain-text-only for user content). Applied wherever the value is displayed in the DOM.
 
-> This file is the **schema authority** for the project. [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md), [WORKFLOWS.md](WORKFLOWS.md), and `CLAUDE.md` reference this file for field-level details rather than redefining them.
+> This file is the **schema authority** for the project. [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md), [WORKFLOWS.md](./WORKFLOWS.md), and [CLAUDE.md](../CLAUDE.md) reference this file for field-level details rather than redefining them.
 
 ---
 
@@ -29,7 +29,7 @@ Central domain record. Lives in `data/source/scents.json`. Every wheel display i
 | Rule | Layer | Enforcement |
 |---|---|---|
 | `domain` is required | PYD | `Literal["scent", "texture"]` — any other value raises `ValidationError` |
-| `deprecated` is required | PYD | `bool` with `default=False`; field must be explicitly present in JSON |
+| `deprecated` is required | PYD | `bool`, default `false` |
 | `category_ids` is required | PYD | `list[str]`, minimum length 1 — a Scent must belong to at least one Category |
 | `compounds` may be empty list | PYD | `list[str]`, default `[]` — empty state is valid (no compounds recorded yet) |
 | `synonyms` may be empty list | PYD | `list[str]`, default `[]` |
@@ -280,7 +280,7 @@ The export / import / `localStorage` shape. Not a curated-data file — this is 
 
 | Rule | Layer | Enforcement |
 |---|---|---|
-| `ingredients` is required | JS | `list`, may be empty |
+| `ingredients` is required | JS | `array`, may be empty |
 | Each entry must have `ingredient_id` | JS | Type guard |
 | Each entry must have `role: "base" \| "target"` | JS | `if (!["base","target"].includes(entry.role)) throw Error(...)` |
 | Each `ingredient_id` must resolve in `bundle.json` | JS | `data.js` lookup; unresolvable ID → non-blocking warning |
@@ -290,7 +290,7 @@ The export / import / `localStorage` shape. Not a curated-data file — this is 
 
 | Rule | Layer | Enforcement |
 |---|---|---|
-| `scents_displayed` is required | JS | `list[str]`, may be empty |
+| `scents_displayed` is required | JS | `string[]`, may be empty |
 | Each entry must resolve to a Scent `id` in `bundle.json` | JS | Import validator; unresolvable entry → warning + skipped |
 | Deprecated Scent in `scents_displayed` → warning on import | JS | Import validator |
 
@@ -298,7 +298,7 @@ The export / import / `localStorage` shape. Not a curated-data file — this is 
 
 | Rule | Layer | Enforcement |
 |---|---|---|
-| `custom_scents` is required | JS | `list`, may be empty |
+| `custom_scents` is required | JS | `array`, may be empty |
 | Each entry must have `name` | JS | Non-empty string; type guard |
 | Each `category_ids` entry in a custom scent must resolve in `bundle.json` | JS | Import validator; non-blocking warning on miss |
 | `definition` on a custom scent is optional | JS | `string \| undefined` |

@@ -30,7 +30,7 @@ Cross-references:
 
 All curated records (Scent, Ingredient, Compound, Citation, Category) follow the same soft-delete pattern, but the Scent record is the most consequential because it drives every wheel display.
 
-### State diagram
+### Scent state diagram
 
 ```
   Maintainer creates record in data/source/scents.json
@@ -69,7 +69,7 @@ Hard deletion of any curated record is **prohibited**. Files never shrink. A Sce
 
 See [BUSINESS_RULES.md §7 — Soft-Delete Semantics](./BUSINESS_RULES.md#soft-delete-semantics) for the cross-entity definition of this rule.
 
-### Trigger
+### Scent trigger
 
 The maintainer hand-edits `data/source/scents.json` (or any other source file). This is the only write path — no automated process mutates the source files.
 
@@ -86,7 +86,7 @@ The maintainer hand-edits `data/source/scents.json` (or any other source file). 
 
 The wheel state is the user's live session object. It is not a curated-data file — it is never written to `data/source/`. Its lifecycle spans three storage layers.
 
-### State diagram
+### Wheel-state diagram
 
 ```
   App loads (first visit, or localStorage empty)
@@ -134,7 +134,7 @@ The wheel state is the user's live session object. It is not a curated-data file
             ▼
   schema_version check: must equal 1 exactly
     └─ mismatch → fail loudly ("expected 1, got <actual>"); refuse to load
-       See BUSINESS_RULES.md §6 and §7 (Schema Version)
+       See BUSINESS_RULES.md §6 — Wheel State and §7 — Schema Version
             │
             ▼
   app_version logged; no compatibility enforcement on app_version
@@ -156,7 +156,7 @@ Schema-version mismatch is a hard stop — the app never silently upgrades an in
 
 The build pipeline runs at deploy time (and locally when the maintainer runs `scripts/build_bundle.py` to verify changes). It transforms hand-edited source JSON into a validated, frontend-ready bundle.
 
-### Pipeline diagram
+### Build pipeline diagram
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -221,7 +221,7 @@ A Pydantic `ValidationError` in `load.py` causes `scripts/build_bundle.py` to ex
 
 Every push to `main` triggers an automatic Netlify deploy. The deploy wraps the full build pipeline.
 
-### Pipeline diagram
+### Deploy pipeline diagram
 
 ```
   git push origin main
@@ -252,13 +252,9 @@ Every push to `main` triggers an automatic Netlify deploy. The deploy wraps the 
   Live site updated (~1–2 minutes from push)
 ```
 
-### Build command (configured in `netlify.toml`)
+### Build command
 
-```
-uv sync && uv run python scripts/build_bundle.py && cd frontend && npm install && npm run build
-```
-
-**Publish directory**: `frontend/dist/`
+The build command is defined in `netlify.toml`. See [SYSTEM_ARCHITECTURE.md §8.2 — Netlify Build Contract](./SYSTEM_ARCHITECTURE.md#82-netlify-build-contract) for the authoritative record.
 
 ### Latency
 
@@ -327,7 +323,7 @@ The maintainer's day-to-day process for adding or updating curated content. This
 
 A maintainer-side helper script that automates the most tedious part of compound curation. It is never deployed and never called by the browser.
 
-### Trigger
+### Fetcher trigger
 
 ```bash
 uv run python scripts/fetch_compound.py <CID>
@@ -385,25 +381,14 @@ See [§7 — Fetcher failures](#fetcher-failures).
 
 Each failure mode is paired with its detection point and recovery approach.
 
-### Build failures
+### Build failures vs Deploy failures
 
-**Trigger**: A Pydantic `ValidationError` in `sensory_wheel/load.py`, or a referential integrity error (e.g., a Scent references a Compound ID that does not exist in `compounds.json`).
-
-**Detection**: `scripts/build_bundle.py` exits non-zero. Error message names the failing entity and field.
-
-**Where surfaced**: Netlify build log (on `git push`), or terminal output (on local run).
-
-**Recovery**: Fix the validation error in the relevant `data/source/*.json` file and re-run `uv run python scripts/build_bundle.py`. Once the build is clean, commit and push.
-
-**Deploy impact**: The deploy aborts before any new artifact is published. The previous successful deploy remains live. The `main` branch is unchanged (the push succeeded; only the Netlify build failed).
-
-### Deploy failures
-
-**Trigger**: Any non-zero exit from any step in the Netlify build command.
-
-**Detection**: Netlify build log shows the failed command and exit code.
-
-**Recovery**: See [§4 — Rollback procedure](#rollback-procedure). Either revert the commit on `main` (preferred), or use Netlify's "Restore deploy" UI to serve a known-good prior artifact while the fix is prepared.
+| | Build failure | Deploy failure |
+|---|---|---|
+| **Trigger** | Pydantic `ValidationError` (or any non-zero exit from `build_bundle.py`) | Non-zero exit from a later build step (`npm install`, `npm run build`, etc.) |
+| **Detection** | Netlify build logs surface the Pydantic error inline | Netlify build logs |
+| **Recovery** | Fix the bad record in `data/source/*.json`, re-run `uv run python scripts/build_bundle.py` locally, commit, push | See §4 Rollback procedure |
+| **Deploy impact** | Previous deploy stays live (Netlify only publishes successful builds) | Previous deploy stays live |
 
 ### Fetcher failures
 

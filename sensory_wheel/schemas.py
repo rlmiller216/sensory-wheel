@@ -106,14 +106,14 @@ class Citation(_StrictBase):
     authors: list[str] = Field(min_length=1)
     # No range bounds per BUSINESS_RULES.md §4 — just int.
     year: int
+    source_kind: Literal["journal", "book_chapter", "review", "report"]
     doi: str | None = None
     url: str | None = None
     journal: str | None = None
     volume: str | None = None
     pages: str | None = None
     publisher: str | None = None
-    source_kind: Literal["journal", "book_chapter", "review", "report"]
-    local_pdf_filename: str | None = None
+    local_pdf_filename: str | None = Field(default=None, pattern=r"^[^/\\]+$")
     deprecated: bool = False
 
     @model_validator(mode="after")
@@ -141,10 +141,10 @@ class Scent(_StrictBase):
 
     id: KebabSlug
     name: str = Field(min_length=1)
+    category_ids: list[KebabSlug] = Field(min_length=1)
     synonyms: list[str] = Field(default_factory=list)
     domain: Literal["scent", "texture"] = "scent"
     definition: str | None = None
-    category_ids: list[KebabSlug] = Field(min_length=1)
     compounds: list[KebabSlug] = Field(default_factory=list)
     sensory_anchors: list[SensoryAnchor] = Field(default_factory=list)
     literature: list[KebabSlug] = Field(default_factory=list)

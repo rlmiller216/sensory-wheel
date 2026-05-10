@@ -271,6 +271,18 @@ class TestCitation:
         )
         assert c.local_pdf_filename == "any-filename-even-nonexistent.pdf"
 
+    def test_rejects_local_pdf_filename_with_path_separator(self):
+        """Per BUSINESS_RULES.md §4: local_pdf_filename is a bare filename,
+        no path prefix. (File-existence is deferred.)"""
+        with pytest.raises(ValidationError):
+            Citation(
+                **{**_CITATION_BASE, "doi": "10.1234/x", "local_pdf_filename": "subdir/paper.pdf"},
+            )
+        with pytest.raises(ValidationError):
+            Citation(
+                **{**_CITATION_BASE, "doi": "10.1234/x", "local_pdf_filename": "..\\evil.pdf"},
+            )
+
     def test_no_year_bounds(self):
         # BUSINESS_RULES.md §4: no upper/lower bound on year
         c1 = Citation(**{**_CITATION_BASE, "doi": "10.1234/x", "year": 1800})

@@ -136,7 +136,6 @@ only hand-edited truth. Running `uv run python scripts/build_bundle.py` writes
 
 ## License
 
-<!-- TODO: add LICENSE file to repo root -->
 MIT — see [LICENSE](./LICENSE) for details.
 
 ---

@@ -3,7 +3,7 @@
 **Owner**: Rebecca Miller
 **Version**: 0.1.0 | **Last updated**: 2026-05-10
 **Success metric**: % of 5×5 ingredients populated end-to-end (scents + compounds + citations) + capabilities done
-**Current coverage**: 0/5 bases populated, 0/5 targets populated, 0/16 capabilities done — starting state; updates as work lands
+**Current coverage**: 1/5 bases populated, 1/5 targets populated, 0/16 capabilities done — scaffolding landed; no capability fully Done yet
 
 ---
 
@@ -25,15 +25,15 @@ The heartbeat of this document. Scan this table to know where everything stands.
 
 | # | Code | Capability | Priority | Status | Section |
 |---|------|------------|----------|--------|---------|
-| 1 | WV | Wheel Visualization | Must | Not started | [#1](#1-wheel-visualization-wv) |
-| 2 | IP | Ingredient Picker | Must | Not started | [#2](#2-ingredient-picker-ip) |
-| 3 | SM | Scent Management Sidebar | Must | Not started | [#3](#3-scent-management-sidebar-sm) |
+| 1 | WV | Wheel Visualization | Must | In progress (basic render only; no interactivity polish) | [#1](#1-wheel-visualization-wv) |
+| 2 | IP | Ingredient Picker | Must | In progress (base + target dropdowns only) | [#2](#2-ingredient-picker-ip) |
+| 3 | SM | Scent Management Sidebar | Must | In progress (sidebar shell only; no add/remove) | [#3](#3-scent-management-sidebar-sm) |
 | 4 | SP | Side Panel Detail View | Must | Not started | [#4](#4-side-panel-detail-view-sp) |
 | 5 | HD | Hierarchy Depth Control | Must | Not started | [#5](#5-hierarchy-depth-control-hd) |
-| 6 | LS | localStorage Persistence | Must | Not started | [#6](#6-localstorage-persistence-ls) |
+| 6 | LS | localStorage Persistence | Must | In progress (store + auto-save; no reload UI, no schema_version warnings) | [#6](#6-localstorage-persistence-ls) |
 | 7 | IO | JSON Import/Export | Must | Not started | [#7](#7-json-importexport-io) |
-| 8 | CD | Curation Data Pipeline | Must | Not started | [#8](#8-curation-data-pipeline-cd) |
-| 9 | CN | Curated Content (5×5) | Must | Not started | [#9](#9-curated-content-55-cn) |
+| 8 | CD | Curation Data Pipeline | Must | In progress (schemas + per-record validation + bundle write; cross-record validators, referential integrity, parent-cycle detection, local_pdf existence, reverse indexes, and PubChem fetcher all deferred to a "CD hardening" follow-up plan) | [#8](#8-curation-data-pipeline-cd) |
+| 9 | CN | Curated Content (5×5) | Must | In progress (1/5 base + 1/5 target stub: soy + beef) | [#9](#9-curated-content-55-cn) |
 | 10 | CC | Color Customization | Should | Not started | [#10](#10-color-customization-cc) |
 | 11 | CS | Custom Free-text Scents | Should | Not started | [#11](#11-custom-free-text-scents-cs) |
 | 12 | DT | Definitions Toggle | Should | Not started | [#12](#12-definitions-toggle-dt) |
@@ -81,12 +81,21 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 | Feature | Capability |
 |---------|-----------|
 | Documentation suite (`docs/` folder) — [BUSINESS_RULES.md](./BUSINESS_RULES.md), [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md), [WORKFLOWS.md](./WORKFLOWS.md), and this PRD | Pre-implementation infrastructure |
+| Pydantic schemas (mirror BUSINESS_RULES.md §1–7) | #8 CD |
+| Per-record schema validation | #8 CD |
+| Build script (`scripts/build_bundle.py`) | #8 CD |
+| Vite + Svelte 5 frontend scaffold | #1 WV |
+| Plotly.js sunburst render from bundle | #1 WV |
+| 3-pane layout (header + sidebar + wheel + side panel) | #1 WV |
+| Base/target ingredient dropdowns | #2 IP |
+| localStorage auto-save of wheel state | #6 LS |
+| Soy + beef demo data (8 categories, 7 scents, 3 compounds, 1 citation) | #9 CN |
 
 ---
 
 ## 1. Wheel Visualization (WV)
 
-`Must-have` | Not started
+`Must-have` | In progress (basic render only; no interactivity polish)
 
 **Goal**: Render a multi-layer sunburst chart from `bundle.json` that shows the union of all selected ingredient scents, organized by the curated aroma taxonomy. The wheel is the primary visual output of the app.
 
@@ -94,7 +103,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Render sunburst from `bundle.json` | Must | Not started | `Wheel.svelte` wraps Plotly.js `sunburst` trace; data built by `wheel.js` from the Svelte store |
+| Render sunburst from `bundle.json` | Must | Done | `Wheel.svelte` wraps Plotly.js `sunburst` trace; data built by `wheel.js` from the Svelte store |
 | Hover tooltip on wedge | Must | Not started | Show scent name + category breadcrumb; Plotly default hover |
 | Click wedge to open side panel | Must | Not started | `Wheel.svelte` emits event on Plotly `plotly_click`; `App.svelte` routes to `SidePanel.svelte` |
 | Equal-area weighting per leaf | Must | Not started | v1 wedge sizing is equal-area — no intensity modeling |
@@ -102,7 +111,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 | Error state on Plotly render failure | Should | Not started | Catch Plotly errors; show "Couldn't render the wheel" with diagnostic dump |
 | Demo pre-load on first visit | Should | Not started | First-load shows pre-populated demo: soy (base) + beef (target) |
 
-**Known issues**: None — pre-implementation.
+**Known issues**: Click-to-detail, hover tooltip, empty-state placeholder, equal-area weighting, and error state not yet implemented.
 
 **Dependencies**: Capability #8 (CD — bundle.json must exist with valid data); Capability #9 (CN — curated scent data); Capability #2 (IP — ingredient selection drives the wheel).
 
@@ -135,7 +144,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 ## 2. Ingredient Picker (IP)
 
-`Must-have` | Not started
+`Must-have` | In progress (base + target dropdowns only)
 
 **Goal**: A persistent left sidebar panel where the user selects one or more base ingredients and one or more target ingredients. The picker drives the wheel and all downstream state.
 
@@ -143,8 +152,8 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| List all non-deprecated ingredients | Must | Not started | `data.js` filters `deprecated === true` before populating picker; see [BUSINESS_RULES.md §2](./BUSINESS_RULES.md#2-ingredient) |
-| Role toggle per ingredient (base / target) | Must | Not started | Each selected ingredient has a role assignment; role stored in Wheel State `ingredients[]` |
+| List all non-deprecated ingredients | Must | Done | `data.js` filters `deprecated === true` before populating picker; see [BUSINESS_RULES.md §2](./BUSINESS_RULES.md#2-ingredient) |
+| Role toggle per ingredient (base / target) | Must | Done | Each selected ingredient has a role assignment; role stored in Wheel State `ingredients[]` |
 | Add / remove ingredient from wheel | Must | Not started | Selection mutates the Svelte store; wheel re-renders reactively |
 | "(no scents)" hint on empty ingredient | Must | Not started | Ingredient with empty `scents[]` shows a hint; selecting it produces an empty wheel |
 | Search / filter within picker | Should | Not started | Text filter to narrow the ingredient list; UX TBD at implementation |
@@ -157,7 +166,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 ## 3. Scent Management Sidebar (SM)
 
-`Must-have` | Not started
+`Must-have` | In progress (sidebar shell only; no add/remove)
 
 **Goal**: The left sidebar (below or alongside the ingredient picker) lets the user view, add, and remove individual scents from the current wheel, and access wheel-level controls. This is the primary manipulation surface for the wheel's content.
 
@@ -251,7 +260,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 ## 6. localStorage Persistence (LS)
 
-`Must-have` | Not started
+`Must-have` | In progress (store + auto-save; no reload UI, no schema_version warnings)
 
 **Goal**: Wheel state auto-saves to the browser `localStorage` on every change so that the user never loses work on refresh. The app degrades gracefully if `localStorage` is unavailable.
 
@@ -259,8 +268,8 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Auto-save on every store mutation | Must | Not started | `store.js` `subscribe()` → `localStorage.setItem('sensory_wheel_state', ...)` |
-| Load from localStorage on app startup | Must | Not started | `store.js` reads and validates on init; `schema_version` check per [BUSINESS_RULES.md §6](./BUSINESS_RULES.md#6-wheel-state) |
+| Auto-save on every store mutation | Must | Done | `store.js` `subscribe()` → `localStorage.setItem('sensory_wheel_state', ...)` |
+| Load from localStorage on app startup | Must | Done | `store.js` reads and validates on init; `schema_version` check per [BUSINESS_RULES.md §6](./BUSINESS_RULES.md#6-wheel-state) |
 | ~1 MB per-wheel size cap | Must | Not started | `store.js` checks `JSON.stringify(state).length` before each `setItem()`; prompt to export if exceeded |
 | Graceful degradation when localStorage unavailable | Must | Not started | `try/catch` around `setItem()`; persistent banner "Auto-save is off"; app continues in-memory |
 | Schema version mismatch → discard stored state | Must | Not started | On mismatch, clear stored state; prompt user to start fresh or import a compatible export |
@@ -296,7 +305,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 ## 8. Curation Data Pipeline (CD)
 
-`Must-have` | Not started
+`Must-have` | In progress (schemas + per-record validation + bundle write; cross-record validators, referential integrity, parent-cycle detection, local_pdf existence, reverse indexes, and PubChem fetcher all deferred to a "CD hardening" follow-up plan)
 
 **Goal**: A Python build pipeline that validates hand-edited `data/source/*.json` using Pydantic v2 and produces `frontend/static/bundle.json`. Invalid source data aborts the build; the previous deploy stays live.
 
@@ -304,14 +313,14 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Pydantic v2 models for all entities | Must | Not started | `sensory_wheel/schemas.py` — Scent, Ingredient, Compound, Citation, Category, SensoryAnchor |
-| `load.py` parses and validates all source files | Must | Not started | Reads `data/source/*.json`; runs cross-entity referential integrity checks |
-| Cross-entity referential integrity checks | Must | Not started | Every `category_ids`, `compounds`, `literature`, `scents` foreign ID must resolve; see [BUSINESS_RULES.md](./BUSINESS_RULES.md) |
-| `bundle.py` serializes validated data + reverse indexes | Must | Not started | Writes `frontend/static/bundle.json`; includes pre-built reverse index maps |
-| `scripts/build_bundle.py` entrypoint | Must | Not started | Calls `load.py` + `bundle.py`; exits non-zero on any ValidationError |
-| Build fails loudly on validation error | Must | Not started | Descriptive error: entity type + ID + field; see [WORKFLOWS.md §3](./WORKFLOWS.md#3-build-pipeline) |
-| `scripts/fetch_compound.py` PubChem helper | Should | Not started | Maintainer-side tool only; CID → PubChem PUG REST → Compound record draft; see [WORKFLOWS.md §6](./WORKFLOWS.md#6-pubchem-fetcher-workflow) |
-| Python tests for schemas + referential integrity | Should | Not started | `tests/test_schemas.py`; run with `uv run pytest` |
+| Pydantic v2 models for all entities | Must | Done | `sensory_wheel/schemas.py` — Scent, Ingredient, Compound, Citation, Category, SensoryAnchor |
+| `load.py` parses and validates all source files | Must | Done | Reads `data/source/*.json`; per-record Pydantic validation passes; cross-entity checks deferred |
+| Cross-entity referential integrity checks | Must | Not started | Every `category_ids`, `compounds`, `literature`, `scents` foreign ID must resolve; see [BUSINESS_RULES.md](./BUSINESS_RULES.md) — deferred to CD hardening plan |
+| `bundle.py` serializes validated data + reverse indexes | Must | Done | Writes `frontend/static/bundle.json`; reverse index maps deferred to CD hardening plan |
+| `scripts/build_bundle.py` entrypoint | Must | Done | Calls `load.py` + `bundle.py`; exits non-zero on any ValidationError |
+| Build fails loudly on validation error | Must | Done | Descriptive error: entity type + ID + field; see [WORKFLOWS.md §3](./WORKFLOWS.md#3-build-pipeline) |
+| `scripts/fetch_compound.py` PubChem helper | Should | Not started | Maintainer-side tool only; CID → PubChem PUG REST → Compound record draft; see [WORKFLOWS.md §6](./WORKFLOWS.md#6-pubchem-fetcher-workflow) — deferred to CD hardening plan |
+| Python tests for schemas + referential integrity | Should | Done | `tests/test_schemas.py` — 89 tests passing; referential integrity tests deferred to CD hardening plan |
 
 **Known issues**: None — pre-implementation.
 
@@ -321,7 +330,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 ## 9. Curated Content (5×5) (CN)
 
-`Must-have` | Not started — 0/5 bases populated, 0/5 targets populated
+`Must-have` | In progress — 1/5 bases populated, 1/5 targets populated
 
 **Goal**: Hand-curate structured JSON for all 5 base × 5 target ingredients, covering scents, compounds, and citations for each. This is the content milestone that proves the tool with real flavor chemistry data.
 
@@ -329,11 +338,11 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Taxonomy (`taxonomy.json`) — 8 top-level categories | Must | Not started | Floral, Fruity, Vegetal, Roasted, Spicy, Animal, Mineral, Off-notes; subcategories TBD per research |
-| 5 base ingredients with scents | Must | Not started | Pea protein, soy, mycelium, wheat gluten, faba bean; scent lists derived from `Literature/` + consensus.app |
-| 5 target ingredients with scents | Must | Not started | Beef, chicken, pork, fish, lamb; primary source: `Literature/00 maughan2012` and corpus |
-| Compounds for all scents | Must | Not started | Per-scent `compounds[]` list; CIDs sourced via `fetch_compound.py`; see [WORKFLOWS.md §6](./WORKFLOWS.md#6-pubchem-fetcher-workflow) |
-| Citations for all scents | Must | Not started | Structured Citation records from `Literature/` PDFs + consensus.app; at least 1 per scent |
+| Taxonomy (`taxonomy.json`) — 8 top-level categories | Must | Done | 8 top-level categories present: Floral, Fruity, Vegetal, Roasted, Spicy, Animal, Mineral, Off-notes |
+| 5 base ingredients with scents | Must | In progress (1/5) | Soy populated with scents, compounds, and citation; pea protein, mycelium, wheat gluten, faba bean remain |
+| 5 target ingredients with scents | Must | In progress (1/5) | Beef populated with scents, compounds, and citation; chicken, pork, fish, lamb remain |
+| Compounds for all scents | Must | In progress | 3 compounds recorded for soy/beef scents; remaining scents and ingredients not yet populated |
+| Citations for all scents | Must | In progress | 1 citation recorded (shared across demo scents); full per-scent coverage not yet done |
 | Scent definitions | Should | Not started | User-authored per scent; TGSC / FlavorDB2 are research inputs only — not auto-pulled |
 | Sensory anchors per scent | Should | Not started | Real-world reference standards (name + modality + optional preparation_notes) |
 

@@ -58,7 +58,7 @@ down to the compound and citation level.
 ## Tech stack
 
 - **Frontend:** Svelte 5 (Vite) + Plotly.js (`plotly.js-strict-dist-min` slim build, ~800 KB)
-- **In-browser PDF:** jsPDF + html2canvas
+- **In-browser PDF:** jsPDF + html2canvas (Plotly canvas capture)
 - **Build-time curation:** Python 3.12 with `uv`, Pydantic v2 for schema validation
 - **Hosting:** Netlify (static — no server, no cold starts)
 
@@ -111,7 +111,7 @@ npm run e2e       # Playwright E2E tests (requires npm run dev in another termin
 ```
 sensory_wheel/    # Python package: schemas, load, bundle (build-time only)
 scripts/          # Python entrypoints (build_bundle, fetch_compound)
-data/source/      # Curated JSON — the source of truth
+data/source/      # Hand-curated JSON — the source of truth
 frontend/         # Svelte 5 app (the deployed thing)
 tests/            # Python tests (pytest)
 docs/             # Architecture, requirements, business rules, workflows
@@ -147,4 +147,4 @@ MIT — see [LICENSE](./LICENSE) for details.
 - Compound data via [PubChem](https://pubchem.ncbi.nlm.nih.gov/) (NIH NLM)
 - Reference material via [FlavorDB2](https://cosylab.iiitd.edu.in/flavordb2) (IIIT Delhi) and [The Good Scents Company](https://www.thegoodscentscompany.com/)
 - Research synthesis via [Consensus](https://consensus.app/)
-- Literature corpus: 13 papers on meat / fish / poultry flavor chemistry (see [`Literature/`](./Literature/) — full citations in [`data/source/citations.json`](./data/source/citations.json) once curated)
+- Literature corpus: 13 papers on meat / fish / poultry flavor chemistry (see [`Literature/`](./Literature/) — full bibliography in [`data/source/citations.json`](./data/source/citations.json))

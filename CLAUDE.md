@@ -144,8 +144,9 @@ Before committing: run `uv run pytest && cd frontend && npm run test`. If the co
 3. `npm run dev` to verify the ingredient picker shows it
 
 **New scent:**
-1. Add to `data/source/scents.json` with `id`, `name`, `category_ids` (must resolve), `definition`, `compounds` (compound IDs)
-2. Build + verify
+1. Add to `data/source/scents.json` — see [`docs/BUSINESS_RULES.md`](./docs/BUSINESS_RULES.md#1-scent) §1 for required vs. optional fields
+2. Ensure `category_ids` and `compounds` (if any) all resolve to existing IDs
+3. Build + verify
 
 **New compound:**
 1. Optional: `uv run python scripts/fetch_compound.py <CID>` to draft the record from PubChem
@@ -156,10 +157,15 @@ Before committing: run `uv run pytest && cd frontend && npm run test`. If the co
 1. Add to `data/source/taxonomy.json` with `id`, `name`, `parent_id` (or null for top-level), optional `default_color`
 2. Build + verify
 
+**New sensory anchor (a real-world reference standard for a scent):**
+1. Find the relevant scent record in `data/source/scents.json`
+2. Append to its `sensory_anchors` array: `{name, modality: "aroma" | "flavor", preparation_notes?}` — see [`docs/BUSINESS_RULES.md`](./docs/BUSINESS_RULES.md#1-scent) §1 for the full shape
+3. Build + verify
+
 **New capability:**
 1. Add a row to the PRD MoSCoW table with the next `#N` + a 2-letter code
 2. Add a `## N. Capability Name (CODE)` section with Goal / User Story / Feature table / Known issues / Dependencies
-3. Update the Architecture Docs table in this file if a new doc is needed
+3. Update the Architecture Docs table in `CLAUDE.md` if a new doc is needed
 
 ---
 

@@ -16,6 +16,7 @@ const DEFAULT_STATE = {
   app_version: '0.1.0',
   name: 'Demo wheel',
   description: '',
+  author: null,
   created_at: null,
   updated_at: null,
   ingredients: [
@@ -31,19 +32,22 @@ const DEFAULT_STATE = {
 };
 
 function loadInitialState() {
-  if (typeof localStorage === 'undefined') return { ...DEFAULT_STATE };
+  const now = new Date().toISOString();
+  const fresh = () => ({ ...DEFAULT_STATE, created_at: now, updated_at: now });
+
+  if (typeof localStorage === 'undefined') return fresh();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_STATE };
+    if (!raw) return fresh();
     const parsed = JSON.parse(raw);
     if (parsed.schema_version !== SCHEMA_VERSION) {
       console.warn('schema_version mismatch in saved wheel state; resetting to defaults');
-      return { ...DEFAULT_STATE };
+      return fresh();
     }
     return parsed;
   } catch (err) {
     console.warn('failed to load saved wheel state; resetting to defaults', err);
-    return { ...DEFAULT_STATE };
+    return fresh();
   }
 }
 

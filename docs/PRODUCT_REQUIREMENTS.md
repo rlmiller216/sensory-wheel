@@ -11,6 +11,8 @@
 
 Plant-based-meat formulation is a masking and mimicry problem: plant proteins (pea, soy, mycelium, wheat gluten, faba bean) carry inherent off-notes — beany, grassy, chalky, oxidized — that must be suppressed, while the defining flavor signatures of animal proteins (beef, chicken, pork, fish, lamb) must be built up through flavor chemistry and ingredient choices. There is no interactive tool that lets a formulator see the full aroma landscape of a chosen base and target side-by-side, drill into individual scents to see their constituent compounds and literature citations, and export the analysis for documentation. Formulators rely on paper references and mental models, which slows research and makes it hard to share insights across sessions.
 
+(Note: while internal terminology distinguishes off-flavors from bases and on-flavors from targets, the user-facing UI never uses these labels — many scents like "fresh" or "earthy" belong on both sides depending on context.)
+
 ## Vision
 
 The Sensory Wheel gives a food scientist or formulator a single interactive surface: pick a base ingredient and a target, see the union of all associated scents rendered as a multi-layer sunburst organized by a curated aroma taxonomy, click any wedge to open a scrollable side panel with definition, sensory anchors, compounds, and citations, and export the finished wheel as SVG, PNG, PDF, or JSON. Wheel state auto-saves to the browser and can be re-imported. The result is a deployable static app — no server, no login — that demonstrates the full flavor-chemistry research workflow for a 5-base × 5-target ingredient matrix.
@@ -109,18 +111,16 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 
 ### Sunburst Chart
 
-- **Library**: Plotly.js (`plotly.js-strict-dist-min` build, ~800 KB)
-- **Chart type**: `sunburst`
+Rendering conventions (library build, script loading, color model, container) are defined in [Plotly.js Chart Conventions](#plotlyjs-chart-conventions) and not restated here.
+
 - **Data source**: `bundle.json` fetched from same origin at app startup; wheel data computed by `wheel.js`
 - **Hierarchy**: Category taxonomy drives the ring structure. Top-level categories (Floral, Fruity, Vegetal, Roasted, Spicy, Animal, Mineral, Off-notes) are the first ring; subcategories form inner rings; scents are the leaf wedges.
 - **Scent union**: `wheel.js` computes the deduplicated union of all `scents[]` arrays from selected ingredients. A scent appearing in multiple ingredients appears once.
 - **Weighting**: Equal-area per leaf (v1). All leaf wedges share the same angular size within their parent slice.
-- **Color**: Default palette by top-level category. Per-scent override applied before rendering (see [#10 CC](#10-color-customization-cc)). Color resolution: per-scent override > `Scent.default_color` > category `default_color`.
 - **Depth**: User-configurable (see [#5 HD](#5-hierarchy-depth-control-hd)). Default: 3 levels on first render.
-- **Interactivity**: Plotly defaults — hover tooltip, click-to-select, scroll-to-zoom. Click event is wired to open the side panel.
-- **Container**: `<div>` in `Wheel.svelte`, fixed dimensions, desktop-optimized (≥1024 px viewport).
 - **Multi-category scents**: A scent with `category_ids: ["vegetal", "mineral"]` appears in both parent slices. `wheel.js` duplicates the leaf entry for each category.
-- **Script loading**: Plotly.js imported once at the `Wheel.svelte` component level; not re-imported per render.
+- **Click behavior**: Plotly `plotly_click` event on any wedge → `App.svelte` opens `SidePanel.svelte` for that scent.
+- **Hover tooltip**: Shows scent name + category breadcrumb via Plotly default hover.
 
 ### Interaction Flow
 
@@ -216,7 +216,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 6. **Literature** — Citation list. Each entry: `title` (plain text), `authors` truncated, `year`, DOI or URL as clickable link. Deprecated citations are excluded.
 7. **Annotation** — Textarea bound to `annotations[scent_id]` in Wheel State. Placeholder: "Add a note about this scent…". Auto-saves to localStorage on blur.
 
-### Open / close behavior
+### Open / Close Behavior
 
 - Click wedge → panel slides in from right (transition TBD at implementation; slide or dock).
 - Click the same wedge again or press Escape → panel closes.
@@ -337,7 +337,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 | Scent definitions | Should | Not started | User-authored per scent; TGSC / FlavorDB2 are research inputs only — not auto-pulled |
 | Sensory anchors per scent | Should | Not started | Real-world reference standards (name + modality + optional preparation_notes) |
 
-**Known issues**: None — pre-implementation. Content curation is the primary throughput risk; see [SYSTEM_ARCHITECTURE.md §9.4](./SYSTEM_ARCHITECTURE.md#94--content-curation-throughput).
+**Known issues**: None — pre-implementation. Content curation is the primary throughput risk; see [SYSTEM_ARCHITECTURE.md §9.4](./SYSTEM_ARCHITECTURE.md#94-content-curation-throughput).
 
 **Dependencies**: Capability #8 (CD — pipeline must exist before content can be validated); `Literature/` folder (already populated with 13 PDFs); consensus.app for synthesis.
 
@@ -409,15 +409,15 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 
 `Should-have` | Not started
 
-**Goal**: Users can download the wheel as SVG, PNG, PDF, or JSON. PDF includes a name/description header and an optional definitions appendix. SVG/PNG optionally include a definitions legend block.
+**Goal**: Users can download the wheel as SVG, PNG, PDF, or JSON. PDF includes a name/description header and an optional definitions appendix.
 
 **User story**: As a food scientist, I want to export a PDF of my pea-protein → beef wheel with definitions included so that I can attach it to a project brief without any manual formatting.
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
 | Export dialog with format selector | Should | Not started | SVG, PNG, PDF, JSON tabs or radio; "Include definitions" checkbox |
-| SVG download | Should | Not started | Single image export from Plotly; if definitions checked, definitions legend appended below |
-| PNG download | Should | Not started | Same as SVG but rasterized; if definitions checked, legend block rendered below wheel |
+| SVG download | Should | Not started | Single image export from Plotly; if definitions checked, definitions legend block appended below wheel image |
+| PNG download | Should | Not started | Same as SVG but rasterized; if definitions checked, definitions legend block rendered below wheel image |
 | PDF download (jsPDF + html2canvas) | Should | Not started | Page 1: wheel + name/description/author header + ingredient legend. Optional page 2+: definitions appendix per displayed scent |
 | JSON download | Must | Not started | Full wheel state; always exported regardless of definitions toggle; see [#7 IO](#7-json-importexport-io) |
 | "Include definitions" checkbox | Should | Not started | Per-export choice; does not affect `definitions_visible` in Wheel State |
@@ -503,7 +503,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 
 `Could-have` | Not started
 
-**Goal**: The public-facing `README.md` has a hero screenshot or GIF of the wheel, a live demo link, a clear project description, and complete quick-start instructions. Aimed at GitHub visitors who are food scientists or developers.
+**Goal**: The public-facing `README.md` — aimed at GitHub visitors who are food scientists or developers — has a hero screenshot or GIF of the wheel, a live demo link, a clear project description, and complete quick-start instructions.
 
 **User story**: As a portfolio visitor, I want to see a screenshot of the wheel and a demo link in the README so that I can immediately understand what the project does without cloning it.
 
@@ -588,7 +588,7 @@ See [WORKFLOWS.md §3 Build Pipeline](./WORKFLOWS.md#3-build-pipeline) and [WORK
 | **literature / paper(s)** | Synonyms for a bibliographic source — a journal article, review, or book chapter in the `Literature/` folder or referenced via consensus.app. `Citation` is the canonical entity name. |
 | **base** | The source ingredient the user is starting from (per-wheel role). Examples: pea protein, soy, mycelium, wheat gluten, faba bean. Role is stored only in Wheel State — not on the Ingredient record. |
 | **target** | The product or ingredient the user is trying to taste like (per-wheel role). Examples: beef, chicken, pork, fish, lamb. Same data model as base; role is per-wheel. |
-| **on-flavor / off-flavor** | **INTERNAL framing only. Do NOT surface in the UI.** Many scents (e.g. "earthy", "fresh", "metallic") are legitimately shared between bases and targets. The on/off nomenclature implies polarity that is misleading in practice. Provenance metadata — which ingredient a scent comes from — is sufficient. |
+| **on-flavor / off-flavor** | Internal framing only; not surfaced in UI. See the [Problem](#problem) section for why we avoid these labels in user-facing text. |
 | **CID** | PubChem Compound Identifier. Integer. The preferred external reference for a Compound record. Optional — some niche compounds lack a PubChem entry. When present, `pubchem_url` is derived at runtime as `https://pubchem.ncbi.nlm.nih.gov/compound/<cid>`. |
 | **sensory anchor** | A concrete real-world reference standard for a scent — an object, material, or preparation that exemplifies the attribute. Inspired by the WCR Sensory Lexicon / notbadcoffee.com pattern. No numeric intensity in v1. |
 | **MoSCoW** | Prioritization framework: **Must** have (required for v1 success metric), **Should** have (strongly desired; in scope if feasible), **Could** have (nice to have; low priority), **Won't** have (explicitly out of scope for v1). |

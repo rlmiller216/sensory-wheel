@@ -449,7 +449,7 @@ Four concrete risks are identified for v1. Each has a specific mitigation alread
 
 **Mitigation**:
 - Netlify serves assets with gzip/brotli compression; JSON compresses well.
-- Vite is configured to use the slim `plotly.js-strict-dist-min` build (~800 KB gzipped ~250 KB), not the full Plotly distribution.
+- Vite is configured to use the slim `plotly.js-strict-dist-min` build (~800 KB uncompressed, ~250 KB gzipped), not the full Plotly distribution.
 - v1 data scale ceiling is explicitly capped (~100 scents, ~500 compounds). Exceeding it triggers a performance review before landing more content.
 
 ### 9.2 — localStorage 5–10 MB Browser Cap

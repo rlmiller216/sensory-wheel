@@ -82,7 +82,7 @@ Literature/       → Maintainer's research PDFs (not app data).
 
 - All entity IDs: kebab-case slugs (`pea-protein`, `cut-grass`, `2-acetyl-1-pyrroline`)
 - `schema_version: 1` exact match on every JSON file (increment only on breaking changes)
-- Capability codes: WV, IP, SM, SP, HD, LS, IO, CD, CN, CC, CS, DT, DL, AN, AC, RM (see [`docs/PRODUCT_REQUIREMENTS.md`](./docs/PRODUCT_REQUIREMENTS.md) §3.4)
+- Capability codes: WV, IP, SM, SP, HD, LS, IO, CD, CN, CC, CS, DT, DL, AN, AC, RM (see [`docs/PRODUCT_REQUIREMENTS.md`](./docs/PRODUCT_REQUIREMENTS.md#moscow-status) MoSCoW table)
 
 ---
 

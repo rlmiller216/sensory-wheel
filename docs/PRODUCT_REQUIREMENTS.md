@@ -3,7 +3,7 @@
 **Owner**: Rebecca Miller
 **Version**: 0.1.0 | **Last updated**: 2026-05-10
 **Success metric**: % of 5×5 ingredients populated end-to-end (scents + compounds + citations) + capabilities done
-**Current coverage**: 0/5 bases populated, 0/5 targets populated, 0/17 capabilities done — starting state; updates as work lands
+**Current coverage**: 0/5 bases populated, 0/5 targets populated, 0/16 capabilities done — starting state; updates as work lands
 
 ---
 
@@ -66,7 +66,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 | `Partial (detail)` | All Must-have features are `Done`; Should-have features remain |
 | `Done` | All Must-have + Should-have features are `Done` |
 
-**Header metrics**: `X/5 bases populated` = ingredients in `data/source/ingredients.json` with at least 1 scent, 1 compound, and 1 citation recorded. Same definition for `X/5 targets populated`. `X/17 capabilities done` = capabilities whose MoSCoW row reads `Done`.
+**Header metrics**: `X/5 bases populated` = ingredients in `data/source/ingredients.json` with at least 1 scent, 1 compound, and 1 citation recorded. Same definition for `X/5 targets populated`. `X/16 capabilities done` = capabilities whose MoSCoW row reads `Done`.
 
 **Refresh scope**: When updating any feature in capability #N, re-derive the entire capability — all its feature rows, the MoSCoW summary row, Known Issues, and header metrics if affected. If a commit touches code that serves multiple capabilities, re-derive all affected capabilities.
 

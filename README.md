@@ -59,7 +59,7 @@ down to the compound and citation level.
 
 - **Frontend:** Svelte 5 (Vite) + Plotly.js (`plotly.js-strict-dist-min` slim build, ~800 KB)
 - **In-browser PDF:** jsPDF + html2canvas (Plotly canvas capture)
-- **Build-time curation:** Python 3.12 with `uv`, Pydantic v2 for schema validation
+- **Build-time curation:** Python 3.12+ with `uv`, Pydantic v2 for schema validation
 - **Hosting:** Netlify (static — no server, no cold starts)
 
 All curation runs at **build time** — the deployed app makes no live network

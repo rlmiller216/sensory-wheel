@@ -42,3 +42,19 @@ class TestLoadSourceBundle:
         bad.write_text(json.dumps({"schema_version": 2, "categories": []}))
         with pytest.raises(ValueError, match="schema_version"):
             load_source_bundle(empty_source_dir)
+
+    def test_rejects_missing_list_key(self, empty_source_dir: Path):
+        """A source file with the wrong list key (typo) should fail loudly."""
+        bad = empty_source_dir / "taxonomy.json"
+        bad.write_text(
+            json.dumps({"schema_version": 1, "category": []})
+        )  # typo: should be 'categories'
+        with pytest.raises(ValueError, match="expected a top-level key"):
+            load_source_bundle(empty_source_dir)
+
+    def test_rejects_malformed_json(self, empty_source_dir: Path):
+        """Malformed JSON in any source file should raise a contextualized ValueError."""
+        bad = empty_source_dir / "taxonomy.json"
+        bad.write_text("{ not valid json")
+        with pytest.raises(ValueError, match="invalid JSON"):
+            load_source_bundle(empty_source_dir)

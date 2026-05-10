@@ -9,7 +9,7 @@ from sensory_wheel.schemas import SCHEMA_VERSION, SourceBundle
 
 # Map of source filename → key inside that file that holds the list.
 _SOURCE_FILES = {
-    "taxonomy.json": "categories",
+    "taxonomy.json": "categories",  # file's list key differs from SourceBundle field name
     "scents.json": "scents",
     "compounds.json": "compounds",
     "citations.json": "citations",
@@ -41,13 +41,20 @@ def load_source_bundle(source_dir: Path) -> SourceBundle:
         if not path.is_file():
             raise FileNotFoundError(f"required source file missing: {path}")
 
-        raw = json.loads(path.read_text())
+        try:
+            raw = json.loads(path.read_text())
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{path}: invalid JSON — {exc}") from exc
         if raw.get("schema_version") != SCHEMA_VERSION:
             raise ValueError(
                 f"{path}: schema_version is {raw.get('schema_version')!r}; "
                 f"expected {SCHEMA_VERSION}"
             )
 
-        merged[_BUNDLE_KEYS[filename]] = raw.get(list_key, [])
+        if list_key not in raw:
+            raise ValueError(
+                f"{path}: expected a top-level key {list_key!r} but found keys: {list(raw.keys())}"
+            )
+        merged[_BUNDLE_KEYS[filename]] = raw[list_key]
 
     return SourceBundle.model_validate(merged)

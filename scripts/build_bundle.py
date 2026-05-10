@@ -12,6 +12,7 @@ Writes to:   frontend/static/bundle.json
 from __future__ import annotations
 
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 from sensory_wheel.bundle import write_bundle
@@ -22,8 +23,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DIR = REPO_ROOT / "data" / "source"
 OUTPUT = REPO_ROOT / "frontend" / "static" / "bundle.json"
 
-# v0 — incremented manually when wheel-state JSON shape changes.
-APP_VERSION = "0.1.0"
+# Read from pyproject.toml so the bundle's app_version always matches
+# the installed package version. (To bump, edit `version` in pyproject.toml.)
+APP_VERSION = version("sensory-wheel")
 
 
 def main() -> int:

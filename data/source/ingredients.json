@@ -1,1 +1,15 @@
-{ "schema_version": 1, "ingredients": [] }
+{
+  "schema_version": 1,
+  "ingredients": [
+    {
+      "id": "soy",
+      "name": "Soy protein",
+      "scents": ["beany", "earthy", "grassy", "fatty"]
+    },
+    {
+      "id": "beef",
+      "name": "Beef",
+      "scents": ["meaty", "roasted", "metallic", "fatty", "earthy"]
+    }
+  ]
+}

@@ -1,1 +1,30 @@
-{ "schema_version": 1, "compounds": [] }
+{
+  "schema_version": 1,
+  "compounds": [
+    {
+      "id": "2-methyl-3-furanthiol",
+      "name": "2-Methyl-3-furanthiol",
+      "cid": 522794,
+      "synonyms": ["MFT", "2-methylfuran-3-thiol"],
+      "cas_number": "28588-74-1",
+      "formula": "C5H6OS",
+      "smiles": "CC1=C(SC=C1)S"
+    },
+    {
+      "id": "bis-2-methyl-3-furyl-disulfide",
+      "name": "Bis(2-methyl-3-furyl) disulfide",
+      "cid": 61527,
+      "cas_number": "28588-75-2",
+      "formula": "C10H10O2S2"
+    },
+    {
+      "id": "1-octen-3-ol",
+      "name": "1-Octen-3-ol",
+      "cid": 18827,
+      "synonyms": ["mushroom alcohol", "matsutake alcohol"],
+      "cas_number": "3391-86-4",
+      "formula": "C8H16O",
+      "smiles": "CCCCCC(O)C=C"
+    }
+  ]
+}

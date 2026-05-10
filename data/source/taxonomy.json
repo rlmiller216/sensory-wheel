@@ -1,1 +1,13 @@
-{ "schema_version": 1, "categories": [] }
+{
+  "schema_version": 1,
+  "categories": [
+    {"id": "floral", "name": "Floral", "parent_id": null, "default_color": "#d8a8d8"},
+    {"id": "fruity", "name": "Fruity", "parent_id": null, "default_color": "#e88a7a"},
+    {"id": "vegetal", "name": "Vegetal", "parent_id": null, "default_color": "#88aa55"},
+    {"id": "roasted", "name": "Roasted", "parent_id": null, "default_color": "#8a5a3a"},
+    {"id": "spicy", "name": "Spicy", "parent_id": null, "default_color": "#c87a3a"},
+    {"id": "animal", "name": "Animal", "parent_id": null, "default_color": "#7a3a3a"},
+    {"id": "mineral", "name": "Mineral", "parent_id": null, "default_color": "#6a7a8a"},
+    {"id": "off-notes", "name": "Off-notes", "parent_id": null, "default_color": "#999999"}
+  ]
+}

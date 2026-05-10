@@ -1,1 +1,15 @@
-{ "schema_version": 1, "citations": [] }
+{
+  "schema_version": 1,
+  "citations": [
+    {
+      "id": "maughan-2012",
+      "title": "Identification and Quantification of Flavor Attributes Present in Chicken, Lamb, Pork, Beef, and Turkey",
+      "authors": ["Maughan, C.", "Tansawat, R.", "Cornforth, D.", "Ward, R.", "Martini, S."],
+      "year": 2012,
+      "source_kind": "journal",
+      "doi": "10.1111/j.1750-3841.2012.02904.x",
+      "journal": "Journal of Food Science",
+      "local_pdf_filename": "Identification and Quantification of Flavor Attributes present in Chicken, Lamb, Pork, Beef, and Turkey maughan2012.pdf"
+    }
+  ]
+}

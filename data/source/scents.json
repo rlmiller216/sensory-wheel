@@ -1,1 +1,61 @@
-{ "schema_version": 1, "scents": [] }
+{
+  "schema_version": 1,
+  "scents": [
+    {
+      "id": "beany",
+      "name": "Beany",
+      "category_ids": ["off-notes"],
+      "synonyms": ["bean-like", "legume-like"],
+      "definition": "The legume-like aromatic note characteristic of unprocessed plant proteins; often described as 'green' or 'raw'.",
+      "compounds": []
+    },
+    {
+      "id": "earthy",
+      "name": "Earthy",
+      "category_ids": ["vegetal", "mineral"],
+      "definition": "Aromatic note evoking damp soil, mushroom, or root vegetables.",
+      "compounds": ["1-octen-3-ol"]
+    },
+    {
+      "id": "grassy",
+      "name": "Grassy",
+      "category_ids": ["vegetal"],
+      "synonyms": ["green", "leafy"],
+      "definition": "Fresh-cut grass, leafy green vegetables.",
+      "compounds": []
+    },
+    {
+      "id": "meaty",
+      "name": "Meaty",
+      "category_ids": ["animal"],
+      "synonyms": ["umami", "savory"],
+      "definition": "The savory, brothy aromatic core of cooked meat. Drives the recognition that 'this tastes like meat'.",
+      "compounds": ["2-methyl-3-furanthiol", "bis-2-methyl-3-furyl-disulfide"],
+      "literature": ["maughan-2012"],
+      "sensory_anchors": [
+        {"name": "beef bouillon, prepared per package", "modality": "flavor"}
+      ]
+    },
+    {
+      "id": "roasted",
+      "name": "Roasted",
+      "category_ids": ["roasted"],
+      "definition": "Maillard-derived browning notes from cooked meat surface.",
+      "literature": ["maughan-2012"]
+    },
+    {
+      "id": "fatty",
+      "name": "Fatty",
+      "category_ids": ["animal", "off-notes"],
+      "definition": "The lipid-derived aromatic carrier present in both animal fats and oxidized plant oils.",
+      "compounds": ["1-octen-3-ol"]
+    },
+    {
+      "id": "metallic",
+      "name": "Metallic",
+      "category_ids": ["mineral", "animal"],
+      "definition": "Iron-blood aromatic note characteristic of fresh red meat.",
+      "literature": ["maughan-2012"]
+    }
+  ]
+}

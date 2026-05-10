@@ -46,12 +46,17 @@ export function buildSunburstFigure(scentIds) {
   return {
     data: [
       {
+        // v0: equal-area wedges (no `values` array supplied → Plotly sizes leaves
+        // by count, parents by sum of leaves). Using `branchvalues: 'remainder'`
+        // (Plotly's default) so that when per-scent intensity `values` are added
+        // in a future capability, the behavior degrades gracefully — parent
+        // wedges stay independent rather than auto-summing.
         type: 'sunburst',
         ids,
         labels,
         parents,
         marker: { colors },
-        branchvalues: 'total',
+        branchvalues: 'remainder',
         leaf: { opacity: 0.85 },
       },
     ],

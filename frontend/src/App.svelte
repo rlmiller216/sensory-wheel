@@ -11,7 +11,7 @@
       await loadBundle();
       loaded = true;
     } catch (err) {
-      error = err.message;
+      error = err.message || String(err);
     }
   });
 </script>

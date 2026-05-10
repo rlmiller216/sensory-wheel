@@ -33,13 +33,25 @@ const DEFAULT_STATE = {
 
 function loadInitialState() {
   const now = new Date().toISOString();
-  const fresh = () => ({ ...DEFAULT_STATE, created_at: now, updated_at: now });
+  const fresh = () => ({
+    ...DEFAULT_STATE,
+    ingredients: DEFAULT_STATE.ingredients.map((i) => ({ ...i })),
+    custom_scents: [],
+    color_overrides: {},
+    annotations: {},
+    created_at: now,
+    updated_at: now,
+  });
 
   if (typeof localStorage === 'undefined') return fresh();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return fresh();
     const parsed = JSON.parse(raw);
+    // LocalStorage is opaque to the user — they can't see or edit the value,
+    // so a silent reset is the right UX for a schema bump. File imports
+    // (capability #7-IO, deferred) WILL throw on a version mismatch; if this
+    // logic is ever reused for file imports, split it.
     if (parsed.schema_version !== SCHEMA_VERSION) {
       console.warn('schema_version mismatch in saved wheel state; resetting to defaults');
       return fresh();

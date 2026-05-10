@@ -9,6 +9,10 @@
 body, html { margin: 0; padding: 0; height: 100%; }
 
 #app {
+  /* Desktop-first per CLAUDE.md: enforce ≥1024px viewport.
+     Below this width the layout reflows unpredictably; we'd rather
+     clip cleanly than silently break. Mobile is out of scope for v1. */
+  min-width: 1024px;
   display: grid;
   grid-template-columns: 240px 1fr 240px;
   grid-template-rows: auto 1fr;

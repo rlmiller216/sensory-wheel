@@ -103,7 +103,7 @@ Feature status is **derived from codebase evidence**, not authored from memory. 
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Render sunburst from `bundle.json` | Must | Done | `Wheel.svelte` wraps Plotly.js `sunburst` trace; data built by `wheel.js` from the Svelte store |
+| Render sunburst from `bundle.json` | Must | In progress (implementation complete; deploy pending) | `Wheel.svelte` wraps Plotly.js `sunburst` trace; data built by `wheel.js` from the Svelte store |
 | Hover tooltip on wedge | Must | Not started | Show scent name + category breadcrumb; Plotly default hover |
 | Click wedge to open side panel | Must | Not started | `Wheel.svelte` emits event on Plotly `plotly_click`; `App.svelte` routes to `SidePanel.svelte` |
 | Equal-area weighting per leaf | Must | Not started | v1 wedge sizing is equal-area — no intensity modeling |
@@ -152,8 +152,8 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| List all non-deprecated ingredients | Must | Done | `data.js` filters `deprecated === true` before populating picker; see [BUSINESS_RULES.md §2](./BUSINESS_RULES.md#2-ingredient) |
-| Role toggle per ingredient (base / target) | Must | Done | Each selected ingredient has a role assignment; role stored in Wheel State `ingredients[]` |
+| List all non-deprecated ingredients | Must | In progress (implementation complete; deploy pending) | `data.js` filters `deprecated === true` before populating picker; see [BUSINESS_RULES.md §2](./BUSINESS_RULES.md#2-ingredient) |
+| Role toggle per ingredient (base / target) | Must | In progress (implementation complete; deploy pending) | Each selected ingredient has a role assignment; role stored in Wheel State `ingredients[]` |
 | Add / remove ingredient from wheel | Must | Not started | Selection mutates the Svelte store; wheel re-renders reactively |
 | "(no scents)" hint on empty ingredient | Must | Not started | Ingredient with empty `scents[]` shows a hint; selecting it produces an empty wheel |
 | Search / filter within picker | Should | Not started | Text filter to narrow the ingredient list; UX TBD at implementation |
@@ -268,8 +268,8 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Auto-save on every store mutation | Must | Done | `store.js` `subscribe()` → `localStorage.setItem('sensory_wheel_state', ...)` |
-| Load from localStorage on app startup | Must | Done | `store.js` reads and validates on init; `schema_version` check per [BUSINESS_RULES.md §6](./BUSINESS_RULES.md#6-wheel-state) |
+| Auto-save on every store mutation | Must | In progress (implementation complete; deploy pending) | `store.js` `subscribe()` → `localStorage.setItem('sensory_wheel_state', ...)` |
+| Load from localStorage on app startup | Must | In progress (implementation complete; deploy pending) | `store.js` reads and validates on init; `schema_version` check per [BUSINESS_RULES.md §6](./BUSINESS_RULES.md#6-wheel-state) |
 | ~1 MB per-wheel size cap | Must | Not started | `store.js` checks `JSON.stringify(state).length` before each `setItem()`; prompt to export if exceeded |
 | Graceful degradation when localStorage unavailable | Must | Not started | `try/catch` around `setItem()`; persistent banner "Auto-save is off"; app continues in-memory |
 | Schema version mismatch → discard stored state | Must | Not started | On mismatch, clear stored state; prompt user to start fresh or import a compatible export |
@@ -313,14 +313,14 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Pydantic v2 models for all entities | Must | Done | `sensory_wheel/schemas.py` — Scent, Ingredient, Compound, Citation, Category, SensoryAnchor |
-| `load.py` parses and validates all source files | Must | Done | Reads `data/source/*.json`; per-record Pydantic validation passes; cross-entity checks deferred |
+| Pydantic v2 models for all entities | Must | In progress (implementation complete; deploy pending) | `sensory_wheel/schemas.py` — Scent, Ingredient, Compound, Citation, Category, SensoryAnchor |
+| `load.py` parses and validates all source files | Must | In progress (implementation complete; deploy pending) | Reads `data/source/*.json`; per-record Pydantic validation passes; cross-entity checks deferred |
 | Cross-entity referential integrity checks | Must | Not started | Every `category_ids`, `compounds`, `literature`, `scents` foreign ID must resolve; see [BUSINESS_RULES.md](./BUSINESS_RULES.md) — deferred to CD hardening plan |
-| `bundle.py` serializes validated data + reverse indexes | Must | Done | Writes `frontend/static/bundle.json`; reverse index maps deferred to CD hardening plan |
-| `scripts/build_bundle.py` entrypoint | Must | Done | Calls `load.py` + `bundle.py`; exits non-zero on any ValidationError |
-| Build fails loudly on validation error | Must | Done | Descriptive error: entity type + ID + field; see [WORKFLOWS.md §3](./WORKFLOWS.md#3-build-pipeline) |
+| `bundle.py` serializes validated data + reverse indexes | Must | In progress (implementation complete; deploy pending) | Writes `frontend/static/bundle.json`; reverse index maps deferred to CD hardening plan |
+| `scripts/build_bundle.py` entrypoint | Must | In progress (implementation complete; deploy pending) | Calls `load.py` + `bundle.py`; exits non-zero on any ValidationError |
+| Build fails loudly on validation error | Must | In progress (implementation complete; deploy pending) | Descriptive error: entity type + ID + field; see [WORKFLOWS.md §3](./WORKFLOWS.md#3-build-pipeline) |
 | `scripts/fetch_compound.py` PubChem helper | Should | Not started | Maintainer-side tool only; CID → PubChem PUG REST → Compound record draft; see [WORKFLOWS.md §6](./WORKFLOWS.md#6-pubchem-fetcher-workflow) — deferred to CD hardening plan |
-| Python tests for schemas + referential integrity | Should | Done | `tests/test_schemas.py` — 89 tests passing; referential integrity tests deferred to CD hardening plan |
+| Python tests for schemas + referential integrity | Should | In progress (implementation complete; deploy pending) | `tests/test_schemas.py` — 89 tests passing; referential integrity tests deferred to CD hardening plan |
 
 **Known issues**: None — pre-implementation.
 
@@ -338,7 +338,7 @@ Rendering conventions (library build, script loading, color model, container) ar
 
 | Feature | Priority | Status | Notes |
 |---------|----------|--------|-------|
-| Taxonomy (`taxonomy.json`) — 8 top-level categories | Must | Done | 8 top-level categories present: Floral, Fruity, Vegetal, Roasted, Spicy, Animal, Mineral, Off-notes |
+| Taxonomy (`taxonomy.json`) — 8 top-level categories | Must | In progress (implementation complete; deploy pending) | 8 top-level categories present: Floral, Fruity, Vegetal, Roasted, Spicy, Animal, Mineral, Off-notes |
 | 5 base ingredients with scents | Must | In progress (1/5) | Soy populated with scents, compounds, and citation; pea protein, mycelium, wheat gluten, faba bean remain |
 | 5 target ingredients with scents | Must | In progress (1/5) | Beef populated with scents, compounds, and citation; chicken, pork, fish, lamb remain |
 | Compounds for all scents | Must | In progress | 3 compounds recorded for soy/beef scents; remaining scents and ingredients not yet populated |

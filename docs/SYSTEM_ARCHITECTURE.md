@@ -109,9 +109,9 @@ See [BUSINESS_RULES.md §6](./BUSINESS_RULES.md#6-wheel-state) for full field de
 
 > **Placeholder — to be populated after first scaffolding lands.**
 
-This section will be expanded into (or replaced by) `docs/SRC_ARCHITECTURE.md` once the Python package and Svelte frontend are scaffolded. At that point it will document: the Python package structure (`sensory_wheel/`), module responsibilities, the Svelte component hierarchy, and the `data.js` / `store.js` / `wheel.js` frontend module contracts.
+This section will be expanded into (or replaced by) [SRC_ARCHITECTURE.md](./SRC_ARCHITECTURE.md) once the Python package and Svelte frontend are scaffolded. At that point it will document: the Python package structure (`sensory_wheel/`), module responsibilities, the Svelte component hierarchy, and the `data.js` / `store.js` / `wheel.js` frontend module contracts.
 
-`SRC_ARCHITECTURE.md` is explicitly deferred until code exists, per the design spec (§2): "SRC_ARCHITECTURE can't be written before code exists."
+[SRC_ARCHITECTURE.md](./SRC_ARCHITECTURE.md) is explicitly deferred until code exists, per [the design spec](../superpowers/specs/2026-05-10-sensory-wheel-docs-design.md) §2: "SRC_ARCHITECTURE can't be written before code exists."
 
 ---
 
@@ -169,11 +169,7 @@ These diagrams show the rough shape of each record type — enough to understand
       "id": "hexanal",
       "name": "Hexanal",
       "cid": 6752,
-      "synonyms": ["n-hexanal", "caproaldehyde"],
-      "cas_number": "66-25-1",
-      "smiles": "CCCCCC=O",
-      "formula": "C6H12O",
-      "flavordb_url": null,
+      // ... see BUSINESS_RULES.md §3 for full schema
       "deprecated": false
     }
   ]
@@ -190,11 +186,8 @@ These diagrams show the rough shape of each record type — enough to understand
       "title": "...",
       "authors": ["Maughan, C.", "..."],
       "year": 2012,
-      "source_kind": "journal",
       "doi": "10.xxxx/...",
       "url": null,
-      "journal": "...",
-      "local_pdf_filename": "00 maughan2012.pdf",
       "deprecated": false
     }
   ]
@@ -260,7 +253,7 @@ Relationships between curated entities. All forward lists live in JSON files; re
         │ self-ref       │   └──────────────┘      │   │
         │ (parent-       │          ▲               │   │
         │  pointer)      │          │ M:N via       │   │
-        └───────────────-┘          │ scents[]      │   │
+        └────────────────┘          │ scents[]      │   │
                                     │               │   │
                           ┌─────────┴────┐          │   │
                           │  Ingredient  │          │   │
@@ -271,7 +264,7 @@ Relationships between curated entities. All forward lists live in JSON files; re
                           │  deprecated  │          │   │
                           └──────────────┘          │   │
                                                     │   │
-                                          ┌─────────┴──-┤
+                                          ┌─────────┴───┤
                                           │  Citation   │  ┌──────────────┐
                                           │             │  │   Compound   │
                                           │  id         │  │              │
@@ -437,7 +430,7 @@ Three explicit contracts exist between system layers. Each contract defines what
 | Dimension | Detail |
 |-----------|--------|
 | **What** | A single wheel-state JSON object persisted under a known `localStorage` key |
-| **Key name** | To be defined in `store.js` (TBD at implementation time; likely `sensory_wheel_state`) |
+| **Key name** | `sensory_wheel_state` (provisional — confirmed in `store.js` at implementation time) |
 | **Size cap** | ~1 MB per wheel. `store.js` checks `JSON.stringify(state).length` before each `setItem()` call |
 | **Schema version** | `schema_version: 1` required. On mismatch (e.g., after a breaking schema change), the stored state is rejected and cleared; the user is prompted to start fresh or import a compatible export |
 | **Who enforces** | `store.js` (write-side size check) and the import type guard in the JS layer (schema_version check on import) |
@@ -450,7 +443,7 @@ Three explicit contracts exist between system layers. Each contract defines what
 
 Four concrete risks are identified for v1. Each has a specific mitigation already built into the spec.
 
-### Risk 1 — Bundle Size
+### 9.1 — Bundle Size
 
 **Risk**: As curated content grows beyond v1 targets (~100 scents, ~500 compounds, ~50 citations), `bundle.json` and the overall Vite bundle may grow to a size that causes perceptible first-load latency.
 
@@ -459,7 +452,7 @@ Four concrete risks are identified for v1. Each has a specific mitigation alread
 - Vite is configured to use the slim `plotly.js-strict-dist-min` build (~800 KB gzipped ~250 KB), not the full Plotly distribution.
 - v1 data scale ceiling is explicitly capped (~100 scents, ~500 compounds). Exceeding it triggers a performance review before landing more content.
 
-### Risk 2 — localStorage 5–10 MB Browser Cap
+### 9.2 — localStorage 5–10 MB Browser Cap
 
 **Risk**: Browser `localStorage` has a hard quota (typically 5–10 MB across all keys for a given origin). A user who creates many large wheels or who annotates heavily could hit this cap, causing `setItem()` to throw a `QuotaExceededError`.
 
@@ -468,7 +461,7 @@ Four concrete risks are identified for v1. Each has a specific mitigation alread
 - When the per-wheel cap is approached, the user is prompted to export the current wheel as JSON and clear `localStorage` before continuing.
 - If `setItem()` throws despite the cap check (e.g., browser enforces a stricter global quota), the `try/catch` in `store.js` surfaces a banner: "Auto-save is off — export your wheel to preserve it."
 
-### Risk 3 — Plotly.js Sunburst Label Density Past ~50 Wedges
+### 9.3 — Plotly.js Sunburst Label Density
 
 **Risk**: Plotly's sunburst implementation becomes visually unusable when there are more than ~50 leaf wedges — labels overlap, wedges become too narrow to click, and the chart degrades into an unreadable ring.
 
@@ -477,7 +470,7 @@ Four concrete risks are identified for v1. Each has a specific mitigation alread
 - v1 data scale (5 bases × 5 targets) is unlikely to produce more than ~50 unique scents in a typical formulation wheel. Dense scenarios are expected only when a user adds many custom scents or selects all 10 ingredients simultaneously.
 - For wheels that do approach this limit, the depth control defaults to 3 levels, which keeps most practical wheels readable.
 
-### Risk 4 — Content-Curation Throughput
+### 9.4 — Content-Curation Throughput
 
 **Risk**: Hand-curating structured JSON for 5 bases × 5 targets (scents + compounds + citations per ingredient) is time-intensive. Throughput bottleneck could delay the v1 success metric ("5×5 populated end-to-end").
 

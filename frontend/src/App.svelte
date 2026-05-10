@@ -2,9 +2,11 @@
   import { onMount } from 'svelte';
   import { loadBundle } from './lib/data.js';
   import Wheel from './components/Wheel.svelte';
+  import Sidebar from './components/Sidebar.svelte';
+  import SidePanel from './components/SidePanel.svelte';
 
-  let loaded = false;
-  let error = null;
+  let loaded = $state(false);
+  let error = $state(null);
 
   onMount(async () => {
     try {
@@ -16,21 +18,18 @@
   });
 </script>
 
-<main>
+<header>
   <h1>Sensory Wheel</h1>
-  {#if error}
-    <p class="error">Failed to load bundle: {error}</p>
-  {:else if !loaded}
-    <p>Loading…</p>
-  {:else}
-    <div class="wheel-area">
-      <Wheel />
-    </div>
-  {/if}
-</main>
+</header>
 
-<style>
-  main { padding: 2rem; font-family: system-ui, sans-serif; }
-  .error { color: #b00; }
-  .wheel-area { width: 600px; height: 600px; margin: 0 auto; }
-</style>
+{#if error}
+  <main style="grid-area: wheel;"><p style="color: #b00;">Failed to load bundle: {error}</p></main>
+{:else if !loaded}
+  <main style="grid-area: wheel;"><p>Loading…</p></main>
+{:else}
+  <Sidebar />
+  <div class="wheel-area">
+    <Wheel />
+  </div>
+  <SidePanel />
+{/if}

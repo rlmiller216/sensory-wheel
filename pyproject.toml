@@ -1,7 +1,7 @@
 [project]
 name = "sensory-wheel"
 version = "0.1.0"
-description = "Add your description here"
+description = "Build-time data pipeline and Svelte 5 frontend for plant-based-meat flavor formulation."
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.13.4",
